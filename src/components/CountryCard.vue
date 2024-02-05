@@ -2,7 +2,7 @@
   <div class="border border-gray-300 shadow-lg rounded-lg overflow-hidden w-full dark:bg-dark-blue dark:border-slate-800">
     <picture class="block w-full">
       <source :srcset="props.country.flags.png" />
-      <img :srcset="props.country.flags.svg" alt="country flag" class="w-full h-48 object-cover" />
+      <img :src="props.country.flags.svg" alt="country flag" class="w-full h-48" />
     </picture>
     <div class="ps-6 pb-10">
       <h2 class="py-5 font-bold text-lg">{{ props.country.name }}</h2>

@@ -14,9 +14,9 @@
     </template>
     <template v-else-if="ready">
       <div class="flex flex-col mt-12 md:flex-row md:mt-8">
-        <picture class="flex place-content-center flex-wrap  md:flex-1 md md:me-24">
+        <picture class="flex items-center lg:place-content-center flex-wrap  md:flex-1 md md:me-24">
           <source :srcset="country.flags.png" />
-          <img :srcset="country.flags.svg" alt="country flag" class="w-full h-56 object-cover md:h-96" />
+          <img :src="country.flags.svg" alt="country flag" class="w-80 h-56 lg:h-96 lg:w-full" />
         </picture>
         <div class="md:flex-1">
           <h1 class="font-extrabold py-10 text-xl">
@@ -69,15 +69,16 @@
 
 <script setup>
 import LoadSpinner from '@/components/LoadSpinner.vue';
-import router from '@/router';
+import { useRoute, useRouter } from 'vue-router';
 import { useCountriesStore } from '@/stores/countries';
-import { onMounted, ref, watch } from 'vue';
-import { onBeforeRouteUpdate } from 'vue-router';
+import { ref, watch } from 'vue';
 const countriesStore = useCountriesStore()
 const loading = ref(true)
 const ready = ref(false)
 const error = ref(null)
 const country = ref(null)
+const router = useRouter()
+const route = useRoute()
 
 const props = defineProps({
   countryName: {
@@ -94,7 +95,7 @@ function getCountryNameByAlpha3Code(alpha3Code) {
 
 watch(() => props.countryName, () => {
   init()
-})
+}, { immediate: true })
 
 async function init() {
   loading.value = true
@@ -107,9 +108,18 @@ async function init() {
     loading.value = false
     error.value = err
   } finally {
-    loading.value = false
-    if (!error.value) {
-      ready.value = true
+    if (!country.value) {
+      router.replace({
+        name: 'not-found',
+        params: { pathMatch: route.path.substring(1).split('/') },
+        query: route.query,
+        hash: route.hash
+      })
+    } else {
+      loading.value = false
+      if (!error.value) {
+        ready.value = true
+      }
     }
   }
 }
@@ -120,8 +130,6 @@ async function init() {
 //     init()
 //   }
 // })
-
-onMounted(init)
 </script>
 
 <style scoped></style>
